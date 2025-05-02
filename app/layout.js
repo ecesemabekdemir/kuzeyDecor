@@ -1,11 +1,10 @@
 "use client";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/header";
-import Footer from "@/components/footer/footer";
-import { incrementNumberAction } from "@/server/test";
-import { useState } from "react";
+
+import { urunEkle, urunleriGetir } from "@/server/(action)/test";
 import { useServerAction } from "zsa-react";
+import { useState } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,34 +17,95 @@ const geistMono = Geist_Mono({
 });
 
 export default function RootLayout({ children }) {
-  const [counter, setCounter] = useState(0);
-  const { data, isPending, error, execute } = useServerAction(
-    incrementNumberAction
-  );
+  const [sehpalar, setSehpalar] = useState();
+  const [sandalyeler, setSandalyeler] = useState();
+  const { data, execute } = useServerAction(urunEkle);
+  const {
+    data: urunler,
+    error,
+    execute: urunGetir,
+  } = useServerAction(urunleriGetir);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const input = {
+      urunAdi: formData.get("urunAdi"),
+      urunFiyati: formData.get("urunFiyati"),
+      urunAciklamasi: formData.get("urunAciklamasi"),
+      urunStok: formData.get("urunStok"),
+      urunResmi: formData.get("urunResmi"),
+      urunKategorisi: formData.get("urunKategorisi"),
+    };
+    console.log("Input:", input);
+    const [data, error] = await execute(input);
+    if (error) {
+      console.error("Error:", error);
+    } else {
+      console.log("Success:", data);
+    }
+  };
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <form onSubmit={handleSubmit}>
+          <input type="text" name="urunAdi" placeholder="Ürün Adı" required />
+          <input
+            type="number"
+            name="urunFiyati"
+            placeholder="Ürün Fiyatı"
+            required
+          />
+          <input
+            type="text"
+            name="urunAciklamasi"
+            placeholder="Ürün Açıklaması"
+            required
+          />
+          <input
+            type="number"
+            name="urunStok"
+            placeholder="Ürün Stok"
+            required
+          />
+          <input
+            type="text"
+            name="urunResmi"
+            placeholder="Ürün Resmi URL"
+            required
+          />
+          <input
+            type="text"
+            name="urunKategorisi"
+            placeholder="Ürün Kategorisi"
+            required
+          />
+          <button type="submit">Ürünü Ekle</button>
+        </form>
+        
+        {sehpalar}
         <button
           onClick={async () => {
-            const [data, err] = await execute({
-              number: counter,
+            const [urunler, error] = await urunGetir({
+              urunKategorisi: "sandalye",
             });
-
-            if (err) {
-              throw err;
-              return;
+            if (error) {
+              console.error("Error:", error);
+            } else {
+              console.log("Ürünler:", urunler);
+              setSandalyeler(urunler.data[0].urunAdi);
             }
-            // handle success
-            setCounter(data);
           }}
         >
-          {isPending ? "..." : "Increment: " + counter}
+          sandalyeleri Getir
         </button>
-        <div className="container">
+        {sandalyeler}
+        {/* <div className="container">
           <Header />
           {children}
           <Footer />
-        </div>
+        </div> */}
       </body>
     </html>
   );
