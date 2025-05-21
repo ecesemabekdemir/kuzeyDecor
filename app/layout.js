@@ -5,6 +5,8 @@ import "./globals.css";
 import { urunEkle, urunleriGetir } from "@/server/(action)/test";
 import { useServerAction } from "zsa-react";
 import { useState } from "react";
+import Header from "@/components/header";
+import Footer from "@/components/footer/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,6 +21,9 @@ const geistMono = Geist_Mono({
 export default function RootLayout({ children }) {
   const [sehpalar, setSehpalar] = useState();
   const [sandalyeler, setSandalyeler] = useState();
+  const [ayna, setAyna] = useState();
+  const [masalar, setMasalar] = useState();
+  const [tablolar, setTablolar] = useState();
   const { data, execute } = useServerAction(urunEkle);
   const {
     data: urunler,
@@ -83,7 +88,21 @@ export default function RootLayout({ children }) {
           />
           <button type="submit">Ürünü Ekle</button>
         </form>
-        
+        <button
+          onClick={async () => {
+            const [urunler, error] = await urunGetir({
+              urunKategorisi: "sehpa",
+            });
+            if (error) {
+              console.error("Error:", error);
+            } else {
+              console.log("Ürünler:", urunler);
+              setSehpalar(urunler.data[0].urunAdi);
+            }
+          }}
+        >
+          sehpa Getir
+        </button>
         {sehpalar}
         <button
           onClick={async () => {
@@ -101,6 +120,54 @@ export default function RootLayout({ children }) {
           sandalyeleri Getir
         </button>
         {sandalyeler}
+        <button
+          onClick={async () => {
+            const [urunler, error] = await urunGetir({
+              urunKategorisi: "ayna",
+            });
+            if (error) {
+              console.error("Error:", error);
+            } else {
+              console.log("Ürünler:", urunler);
+              setAyna(urunler.data[0].urunAdi);
+            }
+          }}
+        >
+          Aynaları Getir
+        </button>
+        {ayna}
+        <button
+          onClick={async () => {
+            const [urunler, error] = await urunGetir({
+              urunKategorisi: "masa",
+            });
+            if (error) {
+              console.error("Error:", error);
+            } else {
+              console.log("Ürünler:", urunler);
+              setMasalar(urunler.data[0].urunAdi);
+            }
+          }}
+        >
+          masa Getir
+        </button>
+        {masalar}
+        <button
+          onClick={async () => {
+            const [urunler, error] = await urunGetir({
+              urunKategorisi: "Tablolar",
+            });
+            if (error) {
+              console.error("Error:", error);
+            } else {
+              console.log("Ürünler:", urunler);
+              setTablolar(urunler.data[0].urunAdi);
+            }
+          }}
+        >
+          tablolar Getir
+        </button>
+        {tablolar}
         {/* <div className="container">
           <Header />
           {children}

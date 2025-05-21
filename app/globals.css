@@ -1,5 +1,5 @@
 :root {
-  --forest-green: #004d40;
+  --forest-green: #426BA1;
   --copper: #b17a65;
   --cream: #fff5eb;
   --transition: all 0.3s ease;
@@ -10,7 +10,7 @@
 }
 
 body {
-  font-family: "Gotham Pro", Arial, sans-serif;
+  font-family:  sans-serif;
   background-color: var(--cream);
   color: var(--forest-green);
   line-height: 1.6;
